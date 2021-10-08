@@ -1,9 +1,7 @@
 import json
 
 import cglogging as cgl
-import maintenance_read
 from lambda_accessor import lambda_accessor
-import Message
 from secret_manager import secret_manager
 
 logger_Class = cgl.cglogging()
@@ -171,7 +169,7 @@ def submit_camp_login(request):
     profiles = json.loads(secret["SecretString"])
     profile_string = profiles[key]
     extracted_profile = json.loads(profile_string)
-    aircrafts = get_camp_login_aircrafts(request)
+    aircrafts = get_camp_login_aircrafts(request, key, secret_account)
     response = {
         "secretName": secret_account["Name"],
         "keyPrefix": key,
@@ -184,7 +182,7 @@ def submit_camp_login(request):
     return return_code, "GOOD", response
 
 
-def get_camp_login_aircrafts(request):
+def get_camp_login_aircrafts(request, key, secret_account):
     payload = {
         "context": {
             "domainName": "Order",
@@ -198,7 +196,9 @@ def get_camp_login_aircrafts(request):
             "transactionId": "PETERG ORDER"
         },
         "request": {
-            "supplierId": 7000
+            "secretName": secret_account["Name"],
+            "keyPrefix": key,
+            "supplierId": request["request"]["supplierId"]
 
         }
     }

@@ -1,10 +1,7 @@
 import json
-import os
 
-import pytest
 from botocore.exceptions import ClientError
 import boto3
-import base64
 from secret_manager import secret_manager
 from unittest import TestCase
 
@@ -110,26 +107,46 @@ class Test(TestCase):
         print("insdie event")
         payload = {
             "context": {
-                "domainName": "Maintenance",
+                "domainName": "Order",
                 "language": "EN",
-                "securityToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJmaXJzdE5hbWUiOiJzdXBwbGllciIsImxhc3ROYW1lIjoiYWRtaW4iLCJsb2dvblR5cGUiOiJDQSIsInN1cHBsaWVySWQiOjEwMDAsImJ1c2luZXNzSWQiOjAsInVzZXJJZCI6NDQ5NjcxOTEsImlzcyI6IkNoYXJ0ZXIgYW5kIEdvIGF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNjMzNTY1MDQ4fQ.hfoYsZNmNYkSxE4n2HeK2UUg8mHu4QjUhnefoZM1H-WGZS5DquQuEjyB7zt4X_1e4fuXxtqn52z8Y8JLjK4IktAX808ed1WlG0uUTcdekRr1-WnBvpFoebU8vzrB-6r6TqU7hRAomANoszQXT61wWbAXWzE93bA9gNCSPpsD0NKkCHlGG6YoUTLqw7kfR4_GhEqLhKJ4nUTCksh17-seNs6_PrUQPT4OgUsJRlGfHaVMl4t-3zwJmy5HDMx4V2F6yXYaWpCr7JKj1OS4yWlAJZSqmkS0NS-13FHkGjHL82wtxdZbpYOk9Y3VmIoX19p7qXqezRNMi6bmqokn7a4J4w"
+                "securityToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJmaXJzdE5hbWUiOiJzdXBwbGllciIsImxhc3ROYW1lIjoiYWRtaW4iLCJsb2dvblR5cGUiOiJDQSIsInN1cHBsaWVySWQiOjEwMDAsImJ1c2luZXNzSWQiOjAsInVzZXJJZCI6NDQ5NjcxOTEsImlzcyI6IkNoYXJ0ZXIgYW5kIEdvIGF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNjMzNjU1MTI2fQ.lOh3IcrwQvBn8BxP_3GnASZOVpLLj6Ua__u6VkrTlQww3DlYw2aG-wYbZ_12jrG6asYVvu_PZxHgqiYPiInoFT0g7vp5z1rDQOgYiUWzD2OWcf_8ZUfGF7Bk5wG_iV4MfgGq87veW578jn33Y-x-NnmFhrx9_SX_20T65nmX700YEJBUn-EW0jK0pwlY7CKV3qubz8wdxtWqjOhPX_SowpwNj87C8HWNhxtbpb-aJ9z3HZFVo27poD-eArfLgKqtG_bHZBIvSn3eaVOLBRBzIccU_5_jQaj9FZnP_A2R6zF4z0hwlLrJHNdZS6EP8F0Oj8_ceBsQmjWNA-bQd9wNrw"
             },
             "commonParms": {
-                "action": "GetMaintenance",
+                "action": "updateTotals",
                 "view": "CAMP",
                 "version": "1.0.0",
                 "transactionId": "PETERG ORDER"
             },
             "request": {
                 "supplierId": 7000,
-                "aircraftDetails": {
-                    "secretName":"7000-1-CAMP",
-                    "keyPrefix":"CGFLFEED0006-CAMP",
-                    "modelName": "CARAVAN 1 MODEL 208",
-                    "regNo": "N-TXT20",
-                    "serial": "208B-5360TEST2",
-                    "dateRange": 120
-                }
+                "aircraftDetails": [
+                    {
+                        "secretName": "7000-1-Profiles",
+                        "keyPrefix": "CGFLFEED0006-CAMP",
+                        "orderId": 123,
+                        "orderItemId": 384,
+                        "supplierId": 7000,
+                        "maintenanceProvider": "CAMP",
+                        "modelName": "CARAVAN 1 MODEL 208",
+                        "regNo": "N-TXT20",
+                        "serial": "208B-5360TEST2",
+                        "flightType": 0,
+                        "departurePlace": 0,
+                        "arrivalPlace": 0,
+                        "items": [
+                            {
+                                "profileType": "ENGINE",
+                                "serial": "PCE-VA0403TEST2",
+                                "position": 1,
+                                "unit": "HRS",
+                                "lastReportedValue": "83219",
+                                "startTime": "02-04-2021T10:00:00.4893",
+                                "endTime": "02-04-2021T10:00:00.4893",
+                                "lastReportedDate": "2021-04-27T00:00:00"
+                            }
+                        ]
+                    }
+                ]
             }
         }
         response = app.lambda_handler(payload, " ")
@@ -198,27 +215,45 @@ class Test(TestCase):
                 "context": {
                     "domainName": "Order",
                     "language": "EN",
-                    "securityToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJmaXJzdE5hbWUiOiJKb2hubnkiLCJsYXN0TmFtZSI6IlJhYmJpdCIsImxvZ29uVHlwZSI6IlNBIiwic3VwcGxpZXJJZCI6NzAwMCwiYnVzaW5lc3NJZCI6MCwidXNlcklkIjozMzA2ODAxMCwiaXNzIjoiQ2hhcnRlciBhbmQgR28gYXV0aGVudGljYXRpb24iLCJleHAiOjE2MzE2MTk5MTh9.IfBL6Q6AdJzoiOg1oCfMg3u_dp67V8zmQ3F33Z_W4MN2YLirKeJ5gFHLN0kBhfFuQ9KhQ55AS2AOG6SMe4Ce4S2aNve9TAGWGFtXayYqX3hppnACreu-icG5PoqzPDZ6T0bc_hFuHoQgYuVIgGGo6hfx2HJ3ODgfMJR8237qds5SYpki-2hdlbJyddgfuRegN08HdGP3kfRm-b4xKMH_TKMpdxGVrLKQoslyI4uz8IpJGysHHUTtl5FUE4jaSUc1a3TsXudKt2jOzAh9vdw8Skll8rKEwNe46dRfZvCVuqwbHAwkYxa_o2Be3vr0y7glRpSvEBRI1eOxO0r2tqvWRQ"
+                    "securityToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJmaXJzdE5hbWUiOiJzdXBwbGllciIsImxhc3ROYW1lIjoiYWRtaW4iLCJsb2dvblR5cGUiOiJDQSIsInN1cHBsaWVySWQiOjEwMDAsImJ1c2luZXNzSWQiOjAsInVzZXJJZCI6NDQ5NjcxOTEsImlzcyI6IkNoYXJ0ZXIgYW5kIEdvIGF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNjMzNTY1MDQ4fQ.hfoYsZNmNYkSxE4n2HeK2UUg8mHu4QjUhnefoZM1H-WGZS5DquQuEjyB7zt4X_1e4fuXxtqn52z8Y8JLjK4IktAX808ed1WlG0uUTcdekRr1-WnBvpFoebU8vzrB-6r6TqU7hRAomANoszQXT61wWbAXWzE93bA9gNCSPpsD0NKkCHlGG6YoUTLqw7kfR4_GhEqLhKJ4nUTCksh17-seNs6_PrUQPT4OgUsJRlGfHaVMl4t-3zwJmy5HDMx4V2F6yXYaWpCr7JKj1OS4yWlAJZSqmkS0NS-13FHkGjHL82wtxdZbpYOk9Y3VmIoX19p7qXqezRNMi6bmqokn7a4J4w"
                 },
                 "commonParms": {
-                    "action": "DeleteLogin",
+                    "action": "updateTotals",
                     "view": "CAMP",
                     "version": "1.0.0",
                     "transactionId": "PETERG ORDER"
                 },
                 "request": {
+                    "supplierId": 7000,
                     "aircraftDetails": {
+                        "orderId": 123,
+                        "orderItemId": 384,
                         "supplierId": 7000,
+                        "maintenanceType": "Rusada",
                         "modelName": "CARAVAN 1 MODEL 208",
                         "regNo": "N-TXT20",
                         "serial": "208B-5360TEST2",
-                        "dateRange": 120
+                        "flightType": 0,
+                        "departurePlace": 0,
+                        "arrivalPlace": 0,
+                        "items": [
+                            {
+                                "profileType": "PROPELLER",
+                                "serial": "160906TEST2",
+                                "position": "NO. 1",
+                                "unit": "HRS",
+                                "lastReportedValue": "83221",
+                                "startTime": "02-04-2021T10:00:00.4893",
+                                "endTime": "02-04-2021T10:00:00.4893",
+                                "lastReportedDate": "2021-04-27T00:00:00"
+                            }
+                        ]
                     }
                 }
             }
 
             response = lambda_client.invoke(
-                FunctionName="CampProxy-Dev",
+                FunctionName="MaintenanceBroker-Dev:Dev",
                 InvocationType="RequestResponse",
                 LogType='None',
                 Payload=json.dumps(payload),
