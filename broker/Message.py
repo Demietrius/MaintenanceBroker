@@ -35,6 +35,12 @@ class Message:
             print(json.dumps(self.message))
             return self.message
 
+    def set_standard_response(self, standard_response):
+        self.message["standardResponse"] = standard_response
+
+    def get_standard_response(self):
+        return self.message["standardResponse"]
+
     def get_good_standard_message(self):
         return {
             "standardResponse": {

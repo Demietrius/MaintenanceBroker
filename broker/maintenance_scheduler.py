@@ -36,4 +36,3 @@ def get_camp_maintenace(request):
     }
 
     return lambda_accessor.call_camp(payload)
-    pass

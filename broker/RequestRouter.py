@@ -47,7 +47,14 @@ class RequestRouter:
             logger.debug("done with updating totals")
         elif action.upper() == action_enum.GetMaintenance.name.upper():
             logger.debug("get maintenance")
-            return_code, return_message, response = maintenance_scheduler.handler_request(request)
+            return_code, return_message, camp_message = maintenance_scheduler.handler_request(request)
+            response = camp_message["responseMessage"]
+            if camp_message["responseMessage"]["returnCode"] == 0:
+                for warning in camp_message["standardResponse"]["warnings"]:
+                    message.add_warnings(warning)
+            elif return_code == 0:
+                return camp_message
+
 
         elif action.upper() == action_enum.TestLogIn.name.upper():
             logger.debug("test Login")

@@ -1,7 +1,6 @@
 import json
 
 from botocore.exceptions import ClientError
-import boto3
 from secret_manager import secret_manager
 from unittest import TestCase
 
@@ -105,50 +104,8 @@ class Test(TestCase):
 
     def test_lambda_handler1(self):
         print("insdie event")
-        payload = {
-            "context": {
-                "domainName": "Order",
-                "language": "EN",
-                "securityToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJmaXJzdE5hbWUiOiJzdXBwbGllciIsImxhc3ROYW1lIjoiYWRtaW4iLCJsb2dvblR5cGUiOiJDQSIsInN1cHBsaWVySWQiOjEwMDAsImJ1c2luZXNzSWQiOjAsInVzZXJJZCI6NDQ5NjcxOTEsImlzcyI6IkNoYXJ0ZXIgYW5kIEdvIGF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNjMzNjU1MTI2fQ.lOh3IcrwQvBn8BxP_3GnASZOVpLLj6Ua__u6VkrTlQww3DlYw2aG-wYbZ_12jrG6asYVvu_PZxHgqiYPiInoFT0g7vp5z1rDQOgYiUWzD2OWcf_8ZUfGF7Bk5wG_iV4MfgGq87veW578jn33Y-x-NnmFhrx9_SX_20T65nmX700YEJBUn-EW0jK0pwlY7CKV3qubz8wdxtWqjOhPX_SowpwNj87C8HWNhxtbpb-aJ9z3HZFVo27poD-eArfLgKqtG_bHZBIvSn3eaVOLBRBzIccU_5_jQaj9FZnP_A2R6zF4z0hwlLrJHNdZS6EP8F0Oj8_ceBsQmjWNA-bQd9wNrw"
-            },
-            "commonParms": {
-                "action": "updateTotals",
-                "view": "CAMP",
-                "version": "1.0.0",
-                "transactionId": "PETERG ORDER"
-            },
-            "request": {
-                "supplierId": 7000,
-                "aircraftDetails": [
-                    {
-                        "secretName": "7000-1-Profiles",
-                        "keyPrefix": "CGFLFEED0006-CAMP",
-                        "orderId": 123,
-                        "orderItemId": 384,
-                        "supplierId": 7000,
-                        "maintenanceProvider": "CAMP",
-                        "modelName": "CARAVAN 1 MODEL 208",
-                        "regNo": "N-TXT20",
-                        "serial": "208B-5360TEST2",
-                        "flightType": 0,
-                        "departurePlace": 0,
-                        "arrivalPlace": 0,
-                        "items": [
-                            {
-                                "profileType": "ENGINE",
-                                "serial": "PCE-VA0403TEST2",
-                                "position": 1,
-                                "unit": "HRS",
-                                "lastReportedValue": "83219",
-                                "startTime": "02-04-2021T10:00:00.4893",
-                                "endTime": "02-04-2021T10:00:00.4893",
-                                "lastReportedDate": "2021-04-27T00:00:00"
-                            }
-                        ]
-                    }
-                ]
-            }
-        }
+        payload = {"context":{"domainName":"Maintenance","securityToken":"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJmaXJzdE5hbWUiOiJzdXBwbGllciIsImxhc3ROYW1lIjoiYWRtaW4iLCJsb2dvblR5cGUiOiJDQSIsInN1cHBsaWVySWQiOjEwMDAsImJ1c2luZXNzSWQiOjAsInVzZXJJZCI6NDQ5NjcxOTEsImlzcyI6IkNoYXJ0ZXIgYW5kIEdvIGF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNjM1NDY1NDA0fQ.axDdiLf45q3TkSGFvIkGaHX-VYHEq-azNcScGD41sEP7Cdd0Tff4MDqr0-rQHZKQcTqzXMAwlqWk_k87tou3eYpUHHIMLcCnmZC7PbeNk8XgI-VCGWvKNZ4yZO1SxYeDUPH_lq7apCHww31FbAy362UAVBKm---0tjap7ZVMoh0qWTFEQEkIT1lvHVhHyBjkj4y3a5B1zrfaiseP539M38N3aKga-2ZXSlw6bbpniRdU1_m_jx3LqjWrnS_gspzu1i6Cz9skZ567sVM0wkuFmxpLE0vxfvBwY_nuhzCZ35rzVGIppGxTo7DvXsSE_M9C66js_boT79s1i2e8IcWgbw","language":"EN"},"commonParms":{"action":"GetMaintenance","view":"CAMP","version":"1.0.0","transactionId":"PETERG AIRCRAFT"},"request":{"supplierId":7000,"aircraftDetails":{"maintenanceProvider":"CAMP","modelName":"CARAVAN 1 MODEL 208","regNo":"N-T2XT20","serial":"208B-5360TEST2","secretName":"7000-1-Profiles","keyPrefix":"CGFLFEED0006-CAMP","dateRange":120}}}
+
         response = app.lambda_handler(payload, " ")
         pass
 
