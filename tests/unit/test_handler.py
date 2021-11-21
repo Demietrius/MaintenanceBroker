@@ -1,6 +1,5 @@
 import json
 
-from botocore.exceptions import ClientError
 from secret_manager import secret_manager
 from unittest import TestCase
 
@@ -104,8 +103,80 @@ class Test(TestCase):
 
     def test_lambda_handler1(self):
         print("insdie event")
-        payload = {"context":{"domainName":"Maintenance","securityToken":"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJmaXJzdE5hbWUiOiJzdXBwbGllciIsImxhc3ROYW1lIjoiYWRtaW4iLCJsb2dvblR5cGUiOiJDQSIsInN1cHBsaWVySWQiOjEwMDAsImJ1c2luZXNzSWQiOjAsInVzZXJJZCI6NDQ5NjcxOTEsImlzcyI6IkNoYXJ0ZXIgYW5kIEdvIGF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNjM1NDY1NDA0fQ.axDdiLf45q3TkSGFvIkGaHX-VYHEq-azNcScGD41sEP7Cdd0Tff4MDqr0-rQHZKQcTqzXMAwlqWk_k87tou3eYpUHHIMLcCnmZC7PbeNk8XgI-VCGWvKNZ4yZO1SxYeDUPH_lq7apCHww31FbAy362UAVBKm---0tjap7ZVMoh0qWTFEQEkIT1lvHVhHyBjkj4y3a5B1zrfaiseP539M38N3aKga-2ZXSlw6bbpniRdU1_m_jx3LqjWrnS_gspzu1i6Cz9skZ567sVM0wkuFmxpLE0vxfvBwY_nuhzCZ35rzVGIppGxTo7DvXsSE_M9C66js_boT79s1i2e8IcWgbw","language":"EN"},"commonParms":{"action":"GetMaintenance","view":"CAMP","version":"1.0.0","transactionId":"PETERG AIRCRAFT"},"request":{"supplierId":7000,"aircraftDetails":{"maintenanceProvider":"CAMP","modelName":"CARAVAN 1 MODEL 208","regNo":"N-T2XT20","serial":"208B-5360TEST2","secretName":"7000-1-Profiles","keyPrefix":"CGFLFEED0006-CAMP","dateRange":120}}}
-
+        payload = {
+    "context": {
+        "securityToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJmaXJzdE5hbWUiOiJTeXN0ZW1fMSIsImxhc3ROYW1lIjoiU3lzdGVtIiwibG9nb25UeXBlIjoiWkEiLCJzdXBwbGllcklkIjoxMDAwLCJidXNpbmVzc0lkIjowLCJ1c2VySWQiOjE2MjY5MTQsImlzcyI6IkNoYXJ0ZXIgYW5kIEdvIGF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNjQyMDY5MTY0fQ.cmzGP_TLysvX-m0pFCSQZVySEtENQrX1-OvwXY3ysUYO7VfW-uDLjz5etmJQgjPkP6au48uM-zrTQn4PVr_PVM64XAWn1MhURfN2ZtO6w_TP7qFAOdEdIwvcYZjOXmMTX--4PyEiAtngwyuHLO0qka4NT0EplWYLviK7HU7yfehJhAW12sgx9yvJy4-5gf6wcYPPrHZ0wH9f27wFSMcFWQJi5nHBNieWF6Eg_i-mg3NMJDmcOncWgE-k1OLvvPGTG_fqvopEXHSUanfql31Fw1GGxiW1i8k6OiyAh4V94ZGgf_cL7t8uk8SaofBGsMLPOG5foQF9awtS9IMuacLiuQ",
+        "transactionid": "AircraftToCampHandler123",
+        "domainName": "Order",
+        "language": "EN"
+    },
+    "commonParms": {
+        "action": "updateTotals",
+        "view": "Maintenance",
+        "version": "1.0.0",
+        "client": "AircraftToCampHandler"
+    },
+    "request": {
+        "supplierId": 7000,
+        "aircraftDetails": [
+            {
+                "secretName": "7000-1-Profiles",
+                "keyPrefix": "CGFLFEED0006-CAMP",
+                "orderId": 0,
+                "orderItemId": 0,
+                "maintenanceProvider": "CAMP",
+                "modelName": "CARAVAN 1 MODEL 208",
+                "regNo": "N-TXT20",
+                "serial": "208B-5360TEST2",
+                "flightType": 0,
+                "departurePlace": "",
+                "arrivalPlace": "",
+                "items": [
+                    {
+                        "profileType": "AIRCRAFT",
+                        "serial": "208B-5360TEST2",
+                        "position": 0,
+                        "unit": "HRS",
+                        "lastReportedValue": 84347,
+                        "startTime": "",
+                        "endTime": "",
+                        "lastReportedDate": "2021-11-18 15:29:51.528430+00:00"
+                    },
+                    {
+                        "profileType": "AIRCRAFT",
+                        "serial": "208B-5360TEST2",
+                        "position": 0,
+                        "unit": "AFL",
+                        "lastReportedValue": 2496,
+                        "startTime": "",
+                        "endTime": "",
+                        "lastReportedDate": "2021-11-18 15:29:51.528445+00:00"
+                    },
+                    {
+                        "profileType": "ENGINE",
+                        "serial": "PCE-VA0403TEST2",
+                        "position": 1,
+                        "unit": "ENC",
+                        "lastReportedValue": 679,
+                        "startTime": "",
+                        "endTime": "",
+                        "lastReportedDate": "2021-11-18 15:29:51.528457+00:00"
+                    },
+                    {
+                        "profileType": "ENGINE",
+                        "serial": "PCE-VA0403TEST2",
+                        "position": 1,
+                        "unit": "HRS",
+                        "lastReportedValue": 84594,
+                        "startTime": "",
+                        "endTime": "",
+                        "lastReportedDate": "2021-11-18 15:29:51.528468+00:00"
+                    }
+                ]
+            }
+        ]
+    }
+}
         response = app.lambda_handler(payload, " ")
         pass
 

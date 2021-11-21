@@ -1,0 +1,616 @@
+---
+swagger: "2.0"
+info:
+  description: "CharterandGo MaintenanceBroker"
+  version: "1.0.0"
+  title: "Swagger MaintenanceBroker"
+host: "lj8nu5djw5.execute-api.us-east-1.amazonaws.com"
+basePath: "/dev-V1"
+schemes:
+- "https"
+paths:
+  /MaintenanceBroker/CreateLogon:
+    post:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "messageCreateLoginMaintenanceBroker"
+        required: true
+        schema:
+          $ref: "#/definitions/messageCreateLoginMaintenanceBroker"
+      responses:
+        "200":
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/messageResponse"
+        "400":
+          description: "400 response"
+          schema:
+            $ref: "#/definitions/messageResponse"
+
+  /MaintenanceBroker/DeleteLogin:
+    post:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "messageDeleteLoginMaintenanceBroker"
+        required: true
+        schema:
+          $ref: "#/definitions/messageDeleteLoginMaintenanceBroker"
+      responses:
+        "200":
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/messageResponse"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        "400":
+          description: "400 response"
+          schema:
+            $ref: "#/definitions/messageResponse"
+
+  /MaintenanceBroker/GetAccount:
+    post:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "messageGetAccounts"
+        required: true
+        schema:
+          $ref: "#/definitions/messageGetAccounts"
+      responses:
+        "200":
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/getAccountsResponse"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        "400":
+          description: "400 response"
+          schema:
+            $ref: "#/definitions/messageResponse"
+
+  /MaintenanceBroker/GetMaintenance:
+    post:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "messageGetMaintenance"
+        required: true
+        schema:
+          $ref: "#/definitions/messageGetMaintenance"
+      responses:
+        "200":
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/getMaintenanceBrokerResponse"
+        "400":
+          description: "400 response"
+          schema:
+            $ref: "#/definitions/messageResponse"
+  /MaintenanceBroker/Read:
+    post:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "messageReadMaintenanceBroker"
+        required: true
+        schema:
+          $ref: "#/definitions/messageReadMaintenanceBroker"
+      responses:
+        "200":
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/getAircraftBrokerResponse"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        "400":
+          description: "400 response"
+          schema:
+            $ref: "#/definitions/messageResponse"
+
+  /MaintenanceBroker/TestLogon:
+    post:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "messageTestLoginMaintenanceBroker"
+        required: true
+        schema:
+          $ref: "#/definitions/messageTestLoginMaintenanceBroker"
+      responses:
+        "200":
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/messageResponse"
+        "400":
+          description: "400 response"
+          schema:
+            $ref: "#/definitions/messageResponse"
+
+  /MaintenanceBroker/Update:
+    post:
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "messageUpdateMaintenanceBroker"
+        required: true
+        schema:
+          $ref: "#/definitions/messageUpdateMaintenanceBroker"
+      responses:
+        "200":
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/messageResponse"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        "400":
+          description: "400 response"
+          schema:
+            $ref: "#/definitions/messageResponse"
+
+  /MaintenanceBroker/GetValidAircraft:
+    post:
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "messageUpdateMaintenanceBroker"
+          required: true
+          schema:
+            $ref: "#/definitions/messageGetValidAircraftMaintenanceBroker"
+      responses:
+        "200":
+          description: "200 response"
+          schema:
+            $ref: "#/definitions/messageValidAircraftMaintenanceBroker"
+          headers:
+            Access-Control-Allow-Origin:
+              type: "string"
+        "400":
+          description: "400 response"
+          schema:
+            $ref: "#/definitions/messageResponse"
+
+definitions:
+  standardResponse:
+    properties:
+      count:
+        type: "integer"
+        format: "int64"
+        description: "count the number affected or returned aircraft"
+      domain:
+        type: "string"
+        enum:
+        - "CrewResponse"
+      returnCode:
+        type: "integer"
+        format: "int64"
+        description: "Any non zero return code means service failed"
+      responseType:
+        type: "string"
+      language:
+        type: "string"
+        minLength: 2
+        maxLength: 2
+      errorMessage:
+        type: "string"
+        minLength: 0
+        maxLength: 100
+    description: "Standard response for all services"
+
+  login:
+    type: "object"
+    properties:
+      supplierId:
+        type: "integer"
+        format: "int64"
+      maintenanceProvider:
+        type: "string"
+      userName:
+        type: "string"
+      password:
+        type: "string"
+    description: "this funtion will test the login to validate good credintials"
+
+  acountDetailsMaintenance:
+    type: "object"
+    properties:
+      supplierId:
+        type: "integer"
+        format: "int64"
+    description: "this is a child to aircraft details"
+
+  messageUpdateMaintenanceBroker:
+    type: "object"
+    required:
+    - "commonParms"
+    - "request"
+    properties:
+      context:
+        $ref: "#/definitions/context"
+      commonParms:
+        $ref: "#/definitions/commonRequestParms"
+      request:
+        $ref: "#/definitions/aircraftDetailsUpdateHours"
+    description: "Client data for read request"
+
+  getAircraftBrokerResponse:
+    properties:
+      standardresponse:
+        $ref: "#/definitions/standardResponse"
+      responseMessage:
+        type: "array"
+        items:
+          $ref: "#/definitions/aircraftDetailsUpdateHours"
+    description: "list of aircraft profiles and details"
+
+  context:
+    type: "object"
+    properties:
+      domainName:
+        type: "string"
+        description: "crewResponse Domain"
+        enum:
+        - "crewResponse"
+      securityToken:
+        type: "string"
+        minLength: 32
+        maxLength: 32
+      language:
+        type: "string"
+        minLength: 2
+        maxLength: 2
+        enum:
+        - "EN"
+      transactionid:
+        type: "string"
+        description: "customer transaction id"
+        minLength: 0
+        maxLength: 24
+    description: "Security Object"
+  getMaintenanceAircraftDetails:
+    type: "object"
+    properties:
+      maintenanceProvider:
+        type: "string"
+        description: "CAG unique supplier id"
+      modelName:
+        type: "string"
+      regNo:
+        type: "string"
+      serial:
+        type: "string"
+      scheduledMaintenance:
+        type: "array"
+        items:
+          $ref: "#/definitions/aircraftScheduledMaintenance"
+    description: "aircraftDetails "
+
+  messageDeleteLoginMaintenanceBroker:
+    type: "object"
+    properties:
+      context:
+        $ref: "#/definitions/context"
+      commonParms:
+        $ref: "#/definitions/commonRequestParms"
+      request:
+        $ref: "#/definitions/deleteLogin"
+    description: "Client data for read request"
+
+  messageGetValidAircraftMaintenanceBroker:
+    type: "object"
+    properties:
+      context:
+        $ref: "#/definitions/context"
+      commonParms:
+        $ref: "#/definitions/commonRequestParms"
+      request:
+        $ref: "#/definitions/deleteLogin"
+    description: "Client data for read request"
+
+  aircraftDetailsUpdateHours:
+    type: "object"
+    properties:
+      orderId:
+        type: "integer"
+        format: "int64"
+      orderItemId:
+        type: "integer"
+        format: "int64"
+      maintenanceProvider:
+        type: "string"
+      modelName:
+        type: "string"
+      regNo:
+        type: "string"
+      serial:
+        type: "string"
+      flightType:
+        type: "string"
+      departurePlace:
+        type: "string"
+      arrivalPlace:
+        type: "string"
+      items:
+        type: "array"
+        items:
+          $ref: "#/definitions/profiles"
+    description: "aircraftDetails "
+
+  getAccountsResponse:
+    properties:
+      standardresponse:
+        $ref: "#/definitions/standardResponse"
+      responseMessage:
+        type: "array"
+        items:
+          $ref: "#/definitions/accounts"
+    description: "list of aircraft profiles and details"
+
+  messageGetAccounts:
+    type: "object"
+    required:
+    - "commonParms"
+    - "request"
+    properties:
+      context:
+        $ref: "#/definitions/context"
+      commonParms:
+        $ref: "#/definitions/commonRequestParms"
+      request:
+        $ref: "#/definitions/acountDetailsMaintenance"
+    description: "Client data for read request"
+
+  profiles:
+    type: "object"
+    properties:
+      profileType:
+        type: "string"
+      serial:
+        type: "string"
+      position:
+        type: "string"
+      unit:
+        type: "string"
+      lastReportedValue:
+        type: "string"
+      startTime:
+        type: "string"
+      endTime:
+        type: "string"
+      lastReportedDate:
+        type: "string"
+    description: "this is a child to aircraft details"
+
+  messageCreateLoginMaintenanceBroker:
+    type: "object"
+    properties:
+      context:
+        $ref: "#/definitions/context"
+      commonParms:
+        $ref: "#/definitions/commonRequestParms"
+      request:
+        $ref: "#/definitions/login"
+    description: "Client data for read request"
+
+  deleteLogin:
+    type: "object"
+    properties:
+      supplierId:
+        type: "integer"
+        format: "int64"
+      maintenanceProvider:
+        type: "string"
+      keyPrefix:
+        type: "string"
+    description: "this function will delet existing logins"
+  aircraftDetailsGetMaintenance:
+    type: "object"
+    properties:
+      supplierId:
+        type: "integer"
+        format: "int64"
+      aircraftDetails:
+        type: "object"
+        properties: {}
+    description: "this is a child to aircraft details"
+  commonRequestParms:
+    type: "object"
+    properties:
+      action:
+        type: "string"
+        description: "Action to perform in crew specification micro service"
+        enum:
+        - "CREATE"
+        - "UPDATE"
+        - "DELETE"
+        - "READ"
+      view:
+        type: "string"
+        description: "Preset data fields to be returned, DEFAULT or SHOP"
+        enum:
+        - "SHOP"
+        - "DEFAULT"
+      version:
+        type: "string"
+        description: "Version Number 1.0.0"
+        enum:
+        - "1.0.0"
+      client:
+        type: "string"
+        description: "POS Identifier"
+        enum:
+        - "CAGPOS"
+      transactionid:
+        type: "string"
+        description: "Unique customer transaction id"
+        minLength: 0
+        maxLength: 12
+
+  messageReadMaintenanceBroker:
+    type: "object"
+    properties:
+      context:
+        $ref: "#/definitions/context"
+      commonParms:
+        $ref: "#/definitions/commonRequestParms"
+      request:
+        $ref: "#/definitions/aircraftDetails"
+    description: "Client data for read request"
+
+  messageValidAircraftMaintenanceBroker:
+    type: "object"
+    properties:
+      context:
+        $ref: "#/definitions/context"
+      commonParms:
+        $ref: "#/definitions/commonRequestParms"
+      request:
+        type: "array"
+        items:
+          $ref: "#/definitions/aircraftDetails"
+    description: "Client data for read request"
+
+  scheduledMaintenanceDetail:
+    type: "object"
+    properties:
+      unit:
+        type: "string"
+      value:
+        type: "string"
+      nextDue:
+        type: "string"
+    description: "aircraftDetails "
+  messageGetMaintenance:
+    type: "object"
+    required:
+    - "commonParms"
+    - "request"
+    properties:
+      context:
+        $ref: "#/definitions/context"
+      commonParms:
+        $ref: "#/definitions/commonRequestParms"
+      request:
+        $ref: "#/definitions/aircraftDetailsGetMaintenance"
+    description: "Client data for read request"
+  messageResponse:
+    type: "object"
+    properties:
+      standardresponse:
+        $ref: "#/definitions/standardResponse"
+      responseMessage:
+        type: "string"
+        description: "Not currently used"
+    description: "Response Structure"
+  getMaintenanceBrokerResponse:
+    properties:
+      standardresponse:
+        $ref: "#/definitions/standardResponse"
+      responseMessage:
+        type: "array"
+        items:
+          $ref: "#/definitions/getMaintenanceAircraftDetails"
+    description: "list of aircraft profiles and details"
+  accounts:
+    type: "object"
+    properties:
+      userName:
+        type: "string"
+      account:
+        type: "string"
+      status:
+        type: "string"
+      type:
+        type: "string"
+      keyPrefix:
+        type: "string"
+      secretName:
+        type: "string"
+      lastUpdated:
+        type: "string"
+    description: "accounts "
+
+  aircraftDetails:
+    type: "object"
+    properties:
+      maintenanceProvider:
+        type: "string"
+        description: "CAG unique supplier id"
+      modelName:
+        type: "string"
+      regNo:
+        type: "string"
+      serial:
+        type: "string"
+    description: "aircraftDetails "
+
+  messageTestLoginMaintenanceBroker:
+    type: "object"
+    properties:
+      context:
+        $ref: "#/definitions/context"
+      commonParms:
+        $ref: "#/definitions/commonRequestParms"
+      request:
+        $ref: "#/definitions/login"
+    description: "Client data for read request"
+
+  aircraftScheduledMaintenance:
+    type: "object"
+    properties:
+      taskNbr:
+        type: "integer"
+        format: "int64"
+      position:
+        type: "integer"
+        format: "int64"
+      description:
+        type: "string"
+      taskType:
+        type: "string"
+      estDueDate:
+        type: "string"
+      cost:
+        type: "string"
+      hours:
+        type: "string"
+      ProfileType":
+        type: "string"
+      childPosition:
+        type: "string"
+      taskGroupExclusion:
+        type: "string"
+      scheduledMaintenanceDetails:
+        type: "array"
+        items:
+          $ref: "#/definitions/scheduledMaintenanceDetail"
+    description: "aircraftDetails "

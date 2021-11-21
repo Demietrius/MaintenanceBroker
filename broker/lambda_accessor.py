@@ -26,6 +26,12 @@ class lambda_accessor:
         return return_code, return_type, response
 
     @classmethod
+    def call_account_plugin(self, request):
+        self.functionName = os.getenv("CAG_ACCOUNT_PLUGIN_FUNCTION")
+        return_code, return_type, response = self.call_lambda(request)
+        return return_code, return_type, response
+
+    @classmethod
     def call_lambda(self, payload):
         try:
             response = self.lambda_client.invoke(
@@ -37,27 +43,42 @@ class lambda_accessor:
 
             #  does response contain payload element
             if 'Payload' not in response:
-                self.errorObj.add_error(19008, 'Invalid response from profiles', 'FATAL', 'Auto Close Handler')
-                return 1, " ", " "
+                if self.functionName == os.getenv("CAG_CAMP_FUNCTION"):
+                    return 33005, " ", " "
+                else:
+                    return 33006, " ", " "
             if 'StatusCode' not in response or response['StatusCode'] != 200:
-                self.errorObj.add_error(19009, 'Invalid response from profiles', 'FATAL', 'Auto Close Handler')
-                return 1, " ", " "
+                if self.functionName == os.getenv("CAG_CAMP_FUNCTION"):
+                    return 33005, " ", " "
+                else:
+                    return 33006, " ", " "
 
             jsonString = response['Payload'].read()
 
             #  validate json response
             if len(jsonString) <= 0:
-                return 1, "FATAL", "Invalid JSON in payload from business profiles"
+                if self.functionName == os.getenv("CAG_CAMP_FUNCTION"):
+                    return 33007, "FATAL", "Invalid JSON in payload from camp"
+                else:
+                    return 33008, "FATAL", " "
 
             responseObj = json.loads(jsonString)
             logger.debug("JSON String Response from profile: {}".format(responseObj))
             # add message validation on the response and take error
+            if "body" in responseObj:
+                body = json.loads(responseObj["body"])
+                if 'standardResponse' not in body:
+                    return 1, "FATAL", "No standard response element in response from profiles"
+
+                if body['standardResponse']['returnCode'] != 0:
+                    return 1, "FATAL", "Invalid return code from business profiles"
+                return 0, "GOOD", body
 
             if 'standardResponse' not in responseObj:
-                return 1, "FATAL", "No standard response element in response from profiles"
+                return 33011, "FATAL", "No standard response element in response from profiles"
 
             if responseObj['standardResponse']['returnCode'] != 0:
-                return 1, "FATAL", "Invalid return code from business profiles"
+                return 33012, "FATAL", responseObj
 
             return 0, "GOOD", responseObj
 

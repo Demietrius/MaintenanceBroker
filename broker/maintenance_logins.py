@@ -14,9 +14,9 @@ def test_login_handler_request(request):
     elif request["request"]["maintenanceProvider"].upper() == "CAMP".upper():
         return_code, return_type, response = lambda_accessor.call_camp(test_camp_login(request))
         if return_code == 0:
-            return 0, "GOOD", " "
+            return 0, "GOOD", response
         else:
-            return return_code, "FATAL ", " "
+            return return_code, "FATAL ", response
 
 
 def submit_login_handler_request(request):
@@ -24,7 +24,7 @@ def submit_login_handler_request(request):
         return submit_camp_login(test_rusada_login(request))
 
     elif request["request"]["maintenanceProvider"].upper() == "CAMP".upper():
-        return submit_camp_login(test_camp_login(request))
+        return submit_camp_login(request)
 
 
 def delete_login_handler(request):
@@ -33,6 +33,16 @@ def delete_login_handler(request):
 
     elif request["request"]["maintenanceProvider"].upper() == "CAMP".upper():
         return delete_camp_login(request)
+
+
+def get_valid_aircraft_handler(request):
+    if request["request"]["maintenanceProvider"].upper() == "RUSADA".upper():
+        pass
+
+    elif request["request"]["maintenanceProvider"].upper() == "CAMP".upper():
+        return get_camp_login_aircrafts(request["request"]["secretName"],
+                                        request["request"]["keyPrefix"],
+                                        request["request"]["supplierId"])
 
 
 def get_accounts(request):
@@ -48,7 +58,7 @@ def get_accounts(request):
         current_name = str(request["request"]["supplierId"]) + "-" + str(index) + "-Profiles"
         return_code, return_type, secret = secret_manager.get_secrets(current_name)
         if return_code != 0 and index == 1:
-            return 5, "Fatal", " "
+            return return_code, return_type, " "
         elif return_code != 0 and index != 1:
             break
         previous_name = str(request["request"]["supplierId"]) + "-" + str(index) + "-Profiles"
@@ -95,7 +105,7 @@ def get_camp_credentials(request):
         current_name = str(request["request"]["supplierId"]) + "-" + str(index) + "-Profiles"
         return_code, return_type, secret = secret_manager.get_secrets(current_name)
         if return_code != 0 and index == 1:
-            return 5, "Fatal", " "
+            return return_code, return_type, " "
         elif return_code != 0 and index != 1:
             break
         previous_name = str(request["request"]["supplierId"]) + "-" + str(index) + "-Profiles"
@@ -111,7 +121,7 @@ def get_camp_credentials(request):
     if key in extracted_secret:
         return 0, extracted_secret[key]
     else:
-        return 6, "Fatal", " "
+        return 33010, "Fatal", " "
 
 
 def delete_camp_login(request):
@@ -124,7 +134,7 @@ def delete_camp_login(request):
         current_name = str(request["request"]["supplierId"]) + "-" + str(index) + "-Profiles"
         return_code, return_type, secret = secret_manager.get_secrets(current_name)
         if return_code != 0 and index == 1:
-            return 5, "Fatal", " "
+            return return_code, return_type, " "
         elif return_code != 0 and index != 1:
             break
         previous_name = str(request["request"]["supplierId"]) + "-" + str(index) + "-Profiles"
@@ -140,49 +150,51 @@ def delete_camp_login(request):
         del extracted_secret[request["request"]["keyPrefix"]]
         secret_manager.update_secret(secret["Name"], extracted_secret)
     else:
-        return 6, "Fatal", " "
+        return 33010, "Fatal", " "
     pass
     return 0, "GOOD", " "
 
 
 def submit_camp_login(request):
-    return_code = 1
-    secret = " "
-    name = " "
-    index = 1
-    while return_code != 0:
-        name = str(request["request"]["supplierId"]) + "-" + str(index) + "-Profiles"
-        return_code, return_type, secret = secret_manager.get_secrets(name)
-        if return_code == 8088:
-            return_code, return_type, secret = secret_manager.create_secret(name)
-            break
-        if return_code == 8089:
-            index += 1
-        else:
-            break
-    return_code, secret_account, key = secret_manager.add_secret(secret, request["request"])
-    if return_code != 0:
-        return return_code, "Fatal", " "
-    return_code, return_type, secret = secret_manager.get_secrets(name)
-    if return_code != 0:
-        return return_code, "Fatal", " "
-    profiles = json.loads(secret["SecretString"])
-    profile_string = profiles[key]
-    extracted_profile = json.loads(profile_string)
-    aircrafts = get_camp_login_aircrafts(request, key, secret_account)
-    response = {
-        "secretName": secret_account["Name"],
-        "keyPrefix": key,
-        "maintenanceProvider": extracted_profile["account"],
-        "status": extracted_profile["status"],
-        "type": extracted_profile["type"],
-        "lastUpdated": extracted_profile["lastUpdated"],
-        "aircraftDetails": aircrafts,
+    payload = {
+        "context": {
+            "domainName": "AccountPluginManager",
+            "securityToken": request["context"]["securityToken"],
+            "language": "EN"
+        },
+        "commonParms": {
+            "action": "SubmitLogin",
+            "view": "Account",
+            "version": "1.0.0",
+            "transactionId": "PETERG AIRCRAFT"
+        },
+        "request": {
+            "supplierId": request["request"]["supplierId"],
+            "account": {
+                "account": request["request"]["maintenanceProvider"],
+                "userName": request["request"]["userName"],
+                "password": request["request"]["password"],
+                "type": "maintenance"
+            }
+        }
     }
+
+    return_code, return_type, response = lambda_accessor.call_account_plugin(payload)
+    if return_code != 0:
+        return return_code, return_type, " "
+    if response["standardResponse"]["returnCode"] != 0:
+        return return_code, return_type, response
+
+    return_code, return_type, aircrafts = get_camp_login_aircrafts(response["responseMessage"]["secretName"],
+                                                                   response["responseMessage"]["keyPrefix"],
+                                                                   request["request"]["supplierId"])
+    response["responseMessage"]["aircraftDetails"] = aircrafts["responseMessage"],
+
+
     return return_code, "GOOD", response
 
 
-def get_camp_login_aircrafts(request, key, secret_account):
+def get_camp_login_aircrafts(secretName, keyPrefix, supplierId):
     payload = {
         "context": {
             "domainName": "Order",
@@ -196,17 +208,17 @@ def get_camp_login_aircrafts(request, key, secret_account):
             "transactionId": "PETERG ORDER"
         },
         "request": {
-            "secretName": secret_account["Name"],
-            "keyPrefix": key,
-            "supplierId": request["request"]["supplierId"]
+            "secretName": secretName,
+            "keyPrefix": keyPrefix,
+            "supplierId": supplierId
 
         }
     }
     return_code, return_type, response = lambda_accessor.call_camp(payload)
     if return_code == 0:
-        return response["responseMessage"]
+        return return_code, return_type, response
     else:
-        return return_code
+        return return_code, return_type, " "
 
 
 def test_rusada_login(request):

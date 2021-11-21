@@ -6,14 +6,20 @@ class Message:
 
     def __init__(self):
         self.dictionary = {0: " ",
-                           401: "bad token",
-                           8089: " bad token",
-                           8090: " bad token",
-                           8093: " bad token",
-                           1: "error",
-                           2: "Exception, Unexpected error Auto Close Handler",
-                           19002: "Exception, Unexpected error",
-                           10: "duplicate account"
+                           1:" ",
+                           33001: "Bad token",
+                           33002: "Secret Manager Failed",
+                           33003: "Validate Token Error",
+                           33004: "Token corrupted",
+                           33005: "Camp failed on lambda call",
+                           33006: "Rusada failed on lambda call",
+                           33007: "Invalid JSON in payload from camp ",
+                           33008: "Invalid JSON in payload from Rusada",
+                           33009: "Exception, unexpected error Auto Close Handler",
+                           33010: "missing KeyPrefix from message",
+                           33011: "Missing StandardResponse From Proxy",
+                           33012: "Bad return code From Proxy."
+
                            }
         self.message = {"standardResponse": {}, "responseMessage": {}}
         self.warnings = {"warnings": []}
@@ -39,7 +45,7 @@ class Message:
         self.message["standardResponse"] = standard_response
 
     def get_standard_response(self):
-        return self.message["standardResponse"]
+        return self.message
 
     def get_good_standard_message(self):
         return {

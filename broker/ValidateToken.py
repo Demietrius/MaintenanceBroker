@@ -31,7 +31,7 @@ class ValidateToken:
             if 'exp' not in decoded or 'logonType' not in decoded or \
                     'supplierId' not in decoded or 'userId' not in decoded or \
                     'businessId' not in decoded:
-                return 8093, 'FATAL', 'Exception, validate token structure'
+                return 33004, 'FATAL', 'Exception, validate token structure'
 
             else:
                 cls.authLogonType = decoded['logonType']
@@ -43,7 +43,7 @@ class ValidateToken:
 
         except Exception as details:
             logger.error('Unexpected error: {0}'.format(details))
-            return 8090, 'FATAL', 'Exception, invalid token'
+            return 33003, 'FATAL', 'Exception, invalid token'
 
     @classmethod
     def get_public_key(cls, publicSecretName, regionName):
@@ -68,15 +68,15 @@ class ValidateToken:
             except ClientError as e:
                 logger.debug('Unexpected error: {0}'.format(e))
                 if e.response['Error']['Code'] == 'DecryptionFailureException':
-                    return 8089, 'FATAL', 'DecryptionFailureException', secret
+                    return 33002, 'FATAL', 'DecryptionFailureException', secret
                 elif e.response['Error']['Code'] == 'InternalServiceErrorException':
-                    return 8089, 'FATAL', 'InternalServiceErrorException', secret
+                    return 33002, 'FATAL', 'InternalServiceErrorException', secret
                 elif e.response['Error']['Code'] == 'InvalidParameterException':
-                    return 8089, 'FATAL', 'InvalidParameterException', secret
+                    return 33002, 'FATAL', 'InvalidParameterException', secret
                 elif e.response['Error']['Code'] == 'InvalidRequestException':
-                    return 8089, 'FATAL', 'InvalidRequestException', secret
+                    return 33002, 'FATAL', 'InvalidRequestException', secret
                 elif e.response['Error']['Code'] == 'ResourceNotFoundException':
-                    return 8089, 'FATAL', 'ResourceNotFoundException', secret
+                    return 33002, 'FATAL', 'ResourceNotFoundException', secret
             else:
                 # Decrypts secret using the associated KMS CMK.
                 # Depending on whether the secret is a string or binary, one of these fields will be populated.
@@ -87,7 +87,7 @@ class ValidateToken:
             return errNum, 'GOOD', errMsg, secret
         except Exception as details:
             logger.error('Unexpected error: {0}'.format(details))
-        return 8091, 'FATAL', 'Exception, get public key', secret
+        return 33003, 'FATAL', 'Exception, get public key', secret
 
     @classmethod
     def get_authLogonType(cls):

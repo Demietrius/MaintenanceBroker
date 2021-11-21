@@ -56,12 +56,12 @@ def lambda_handler(event, context):
         return transactionResponse
 
     except Exception as details:
-        logger.error('Exception, Unexpected error: {} , {}'.format(19002, details))
+        logger.error('Exception, Unexpected error: {} , {}'.format(33009, details))
         transactionResponse = {'statusCode': '400', 'headers': {}}
         transactionResponse['headers']['Content - Type'] = 'applicationjson'
         transactionResponse['headers']['Access-Control-Allow-Methods'] = 'OPTIONS,POST,PUT,PATCH'
         transactionResponse['headers']['Access-Control-Allow-Headers'] = 'Content-Type'
         transactionResponse['headers']['Access-Control-Allow-Origin'] = '*'
         transactionResponse['headers']['Access-Control-Allow-Credentials'] = True
-        transactionResponse['body'] = json.dumps(message.get_fatal_standard_message(19002))
+        transactionResponse['body'] = json.dumps(message.get_fatal_standard_message(33009))
         return transactionResponse

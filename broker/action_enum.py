@@ -13,3 +13,4 @@ class action_enum(Enum):
     SubmitLogin = "SubmitLogin",
     DeleteLogin = "DeleteLogin",
     GetAccounts = "GetAccounts"
+
