@@ -23,8 +23,8 @@ Resources:
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           ENVIRONMENT_TYPE: local
-          CAG_private_key: CAG_private_key
-          CAG_public_key: CAG_public_key
+          CAG_private_key: CAG_Private_Key-Dev
+          CAG_public_key: CAG_Public_Key-Dev
           CAG_REGION: us-east-1
           CAG_CAMP_FUNCTION: CampProxy-Dev
           CAG_Rusada_FUNCTION: RusadaProxy-Dev

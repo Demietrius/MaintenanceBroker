@@ -25,8 +25,8 @@ class RequestRouter:
             return message.get_fatal_standard_message(1)
         # return bad token if error
         errNum, return_type, errMsg = ValidateToken.validate_jwt(request["context"]["securityToken"])
-        # if errNum != 0:
-        #     return message.get_response(errNum, "")
+        if errNum != 0:
+            return message.get_response(errNum, "")
 
         supplier_id = ValidateToken.get_authSupplierId()
         if ValidateToken.get_authSupplierId() == 1000 and ValidateToken.get_authLogonType() == "CA":
@@ -66,8 +66,11 @@ class RequestRouter:
         elif action.upper() == action_enum.GetValidAircraft.name.upper():
             logger.debug("get getValidAircraft")
             return_code, return_message, camp_message = maintenance_logins.get_valid_aircraft_handler(request)
-            response = camp_message["responseMessage"]
-            if camp_message["standardResponse"]["returnCode"] == 0:
+            if return_code == 33012:
+                message.set_standard_response(camp_message["standardResponse"])
+                return message.get_standard_response()
+
+            elif camp_message["standardResponse"]["returnCode"] == 0:
                 for warning in camp_message["standardResponse"]["warnings"]:
                     message.add_warnings(warning)
             elif return_code == 0:

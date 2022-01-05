@@ -215,10 +215,7 @@ def get_camp_login_aircrafts(secretName, keyPrefix, supplierId):
         }
     }
     return_code, return_type, response = lambda_accessor.call_camp(payload)
-    if return_code == 0:
-        return return_code, return_type, response
-    else:
-        return return_code, return_type, " "
+    return return_code, return_type, response
 
 
 def test_rusada_login(request):
