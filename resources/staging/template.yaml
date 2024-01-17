@@ -16,7 +16,7 @@ Resources:
     Properties:
       CodeUri: broker/
       Handler: app.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.8
       MemorySize: 256
       FunctionName:  MaintenanceBroker-Dev
       Role: arn:aws:iam::901034071818:role/lambda-vpc-role

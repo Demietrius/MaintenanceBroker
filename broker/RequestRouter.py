@@ -28,15 +28,30 @@ class RequestRouter:
         if errNum != 0:
             return message.get_response(errNum, "")
 
-        supplier_id = ValidateToken.get_authSupplierId()
-        if ValidateToken.get_authSupplierId() == 1000 and ValidateToken.get_authLogonType() == "CA":
-            supplier_id = request["request"]["supplierId"]
+        if ValidateToken.get_swapSupplierId() != 0 and ValidateToken.get_authSupplierId() == 1000 \
+                and ValidateToken.get_authLogonType() == "CA":
+            parent_supplier = ValidateToken.get_swapSupplierId()
+        elif ValidateToken.get_authSupplierId() == 1000 \
+                and ValidateToken.get_authLogonType() == "ZA":
+            parent_supplier = ValidateToken.get_swapSupplierId()
+        else:
+            parent_supplier = ValidateToken.get_authSupplierId()
+
+        if ValidateToken.authBranchAccess is not None and len(ValidateToken.authBranchAccess) > 0:
+            for branch in ValidateToken.authBranchAccess:
+                if branch["account"] == "MASTER" and branch["supplierId"] != parent_supplier:
+                    return message.get_fatal_standard_message(33001)
+                if branch["account"] == "BRANCH" and branch["supplierId"] == request["request"]["supplierID"]:
+                    supplier_id = branch["account"]
+
+        else:
+            supplier_id = parent_supplier
 
         # routing by actions
         if action.upper() == action_enum.Read.name.upper():
-            if ValidateToken.get_authLogonType() == "CA" and ValidateToken.get_authSupplierId() != 1000:
-                return message.get_fatal_standard_message(33001)
             logger.debug("getting aircraft and hours")
+            if ValidateToken.get_authLogonType() not in ["SA", "SM", "SC", "CA", "SF", "SH", "ZA"]:
+                return message.get_fatal_standard_message(33001)
             return_code, return_message, response = maintenance_read.handler_request(request)
 
         elif action.upper() == action_enum.updateTotals.name.upper():
@@ -50,14 +65,13 @@ class RequestRouter:
             response = camp_message["responseMessage"]
             for warning in camp_message["standardResponse"]["warnings"]:
                 message.add_warnings(warning)
-                return_code = 1
             logger.debug("done with updating totals")
 
         elif action.upper() == action_enum.GetMaintenance.name.upper():
             logger.debug("get maintenance")
             return_code, return_message, camp_message = maintenance_scheduler.handler_request(request)
             response = camp_message["responseMessage"]
-            if camp_message["standardResponse"]["returnCode"] == 0:
+            if camp_message["standardResponse"]["returnCode"] != 0:
                 for warning in camp_message["standardResponse"]["warnings"]:
                     message.add_warnings(warning)
             elif return_code == 0:
@@ -70,7 +84,7 @@ class RequestRouter:
                 message.set_standard_response(camp_message["standardResponse"])
                 return message.get_standard_response()
 
-            elif camp_message["standardResponse"]["returnCode"] == 0:
+            elif camp_message["standardResponse"]["returnCode"] != 0:
                 for warning in camp_message["standardResponse"]["warnings"]:
                     message.add_warnings(warning)
             elif return_code == 0:

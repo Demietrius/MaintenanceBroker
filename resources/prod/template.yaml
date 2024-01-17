@@ -8,7 +8,7 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 10
+    Timeout: 60
 
 Resources:
   MaintenanceBrokerFunction:
@@ -16,18 +16,18 @@ Resources:
     Properties:
       CodeUri: broker/
       Handler: app.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.8
       MemorySize: 256
-      FunctionName:  MaintenanceBroker-Dev
-      Role: arn:aws:iam::901034071818:role/lambda-vpc-role
+      FunctionName: MaintenanceBroker-Prod
+      Role: arn:aws:iam::786433678211:role/lambda-vpc-role
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
-          ENVIRONMENT_TYPE: local
-          CAG_private_key: CAG_Private_Key-Dev
-          CAG_public_key: CAG_Public_Key-Dev
+          ENVIRONMENT_TYPE: PROD
+          CAG_private_key: CAG_Private_Key-Prod
+          CAG_public_key: CAG_Public_Key-Prod
           CAG_REGION: us-east-1
-          CAG_CAMP_FUNCTION: CampProxy-Dev
-          CAG_Rusada_FUNCTION: RusadaProxy-Dev
+          CAG_CAMP_FUNCTION: CampProxy-Prod
+          CAG_Rusada_FUNCTION: RusadaProxy-Prod
 
       Events:
         MaintenanceBroker:
@@ -40,9 +40,6 @@ Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  MaintenanceBrokerApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
   MaintenanceBrokerFunction:
     Description: "Hello World Lambda Function ARN"
     Value: !GetAtt MaintenanceBrokerFunction.Arn

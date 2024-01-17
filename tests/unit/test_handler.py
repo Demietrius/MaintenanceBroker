@@ -1,5 +1,8 @@
 import json
 
+import boto3
+from botocore.exceptions import ClientError
+
 from secret_manager import secret_manager
 from unittest import TestCase
 
@@ -12,109 +15,175 @@ class Test(TestCase):
         """ Generates API GW Event"""
 
         return {
-            "body": {
-                "context": {
-                    "domainName": "Order",
-                    "language": "EN",
-                    "securityToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJmaXJzdE5hbWUiOiJKb2hubnkiLCJsYXN0TmFtZSI6IlJhYmJpdCIsImxvZ29uVHlwZSI6IlNBIiwic3VwcGxpZXJJZCI6NzAwMCwiYnVzaW5lc3NJZCI6MCwidXNlcklkIjozMzA2ODAxMCwiaXNzIjoiQ2hhcnRlciBhbmQgR28gYXV0aGVudGljYXRpb24iLCJleHAiOjE2MzE2MTk5MTh9.IfBL6Q6AdJzoiOg1oCfMg3u_dp67V8zmQ3F33Z_W4MN2YLirKeJ5gFHLN0kBhfFuQ9KhQ55AS2AOG6SMe4Ce4S2aNve9TAGWGFtXayYqX3hppnACreu-icG5PoqzPDZ6T0bc_hFuHoQgYuVIgGGo6hfx2HJ3ODgfMJR8237qds5SYpki-2hdlbJyddgfuRegN08HdGP3kfRm-b4xKMH_TKMpdxGVrLKQoslyI4uz8IpJGysHHUTtl5FUE4jaSUc1a3TsXudKt2jOzAh9vdw8Skll8rKEwNe46dRfZvCVuqwbHAwkYxa_o2Be3vr0y7glRpSvEBRI1eOxO0r2tqvWRQ"
-                },
-                "commonParms": {
-                    "action": "updateTotals",
-                    "view": "CAMP",
-                    "version": "1.0.0",
-                    "transactionId": "PETERG ORDER"
-                },
-                "request": {
-                    "aircraftDetails": {
-                        "orderId": 123,
-                        "orderItemId": 384,
-                        "supplierId": 7000,
-                        "maintenanceType": "Rusada",
-                        "modelName": "CARAVAN 1 MODEL 208",
-                        "regNo": "N-TXT20",
-                        "serial": "208B-5360TEST2",
+            "context": {
+                "securityToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJmaXJzdE5hbWUiOiJTeXN0ZW0iLCJsYXN0TmFtZSI6IkRvbWFpblRvRG9tYWluIiwibG9nb25UeXBlIjoiWkEiLCJzdXBwbGllcklkIjoxMDAwLCJidXNpbmVzc0lkIjowLCJ1c2VySWQiOjM5NDMwODY1LCJpc3MiOiJDaGFydGVyIGFuZCBHbyBhdXRoZW50aWNhdGlvbiIsImV4cCI6MTY3MjgwMjA1Nn0.JfBUCc09sTFVTKgBPN-VfVoC2Ya2pSVG86DOuV-3kYaY5lMicHLF9fYBLi9CB6f33i0FAt5cjtaOgstl-iAdoaFFGUyi36sTwREv_oM2rUXIgYpWz0LzVucFNam0C5OwkGzK2EOvWZdB4mEAP62ytdssCBxzE8FIY0WsybSUthwp28UZeb8TfmsUMLNx16famru15nkhihA8kUZ52kBifQoNNe0Pm1FA15UCt7Cx7OMuNGtelF1BTRL8O9ga8STLxe5xvlbdp_we_mZEE_sCnbQzzjiSnLCpqL4d9PUYnDG7Gp3aYThhkNAVbhx_Dhd_62AzEPyGpyPEpNnZBZnaeRQVRD0Z1ru5SheStRAyEhSf2tJ2quOQnheS0Gf1uFO2d8F7S3_xKVO4A-lBbnLhN5JRZxH1Xlr6h1WORXUVETN4gGm1iTpdQeurprrH5BIANC2FMeOBgJyWH0NzWlRbHvJ-v3NVxAFxPmLn3Hflbddclv8u-2bwvaGCAeWXYMLV",
+                "transactionid": "AircraftToCampHandler123",
+                "domainName": "MaintBroker",
+                "language": "EN"
+            },
+            "commonParms": {
+                "action": "updateTotals",
+                "view": "Maintenance",
+                "version": "1.0.0",
+                "client": "AircraftToCampHandler"
+            },
+            "request": {
+                "supplierId": 7000,
+                "aircraftDetails": [
+                    {
+                        "secretName": "7000-1-Profiles",
+                        "keyPrefix": "CGFLFEED0006-CAMP",
+                        "orderId": 0,
+                        "orderItemId": 0,
+                        "maintenanceProvider": "CAMP",
+                        "modelName": "G200",
+                        "regNo": "N-TXT3",
+                        "serial": "680A-0258TEST",
                         "flightType": 0,
-                        "departurePlace": 0,
-                        "arrivalPlace": 0,
+                        "departurePlace": "",
+                        "arrivalPlace": "",
                         "items": [
                             {
-                                "profileType": "PROPELLER",
-                                "serial": "160906TEST2",
-                                "position": "NO. 1",
+                                "profileType": "ENGINE",
+                                "serial": "PCE-CN0524TEST",
+                                "position": 2,
                                 "unit": "HRS",
-                                "lastReportedValue": "83226",
-                                "startTime": "02-04-2021T10:00:00.4893",
-                                "endTime": "02-04-2021T10:00:00.4893",
-                                "lastReportedDate": "2021-04-27T00:00:00"
+                                "lastReportedValue": 3800,
+                                "startTime": "",
+                                "endTime": "",
+                                "lastReportedDate": "2022-06-24 21:03:43.887698+00:00"
+                            },
+                            {
+                                "profileType": "ENGINE",
+                                "serial": "PCE-CN0524TEST",
+                                "position": 2,
+                                "unit": "ENC",
+                                "lastReportedValue": 59,
+                                "startTime": "",
+                                "endTime": "",
+                                "lastReportedDate": "2022-06-24 21:03:43.887721+00:00"
+                            },
+                            {
+                                "profileType": "ENGINE",
+                                "serial": "PCE-CN0523TEST",
+                                "position": 1,
+                                "unit": "ENC",
+                                "lastReportedValue": 58,
+                                "startTime": "",
+                                "endTime": "",
+                                "lastReportedDate": "2022-06-24 21:03:43.887736+00:00"
+                            },
+                            {
+                                "profileType": "ENGINE",
+                                "serial": "PCE-CN0523TEST",
+                                "position": 1,
+                                "unit": "HRS",
+                                "lastReportedValue": 3810,
+                                "startTime": "",
+                                "endTime": "",
+                                "lastReportedDate": "2022-06-24 21:03:43.887751+00:00"
+                            },
+                            {
+                                "profileType": "AIRCRAFT",
+                                "serial": "680A-0258TEST",
+                                "position": 0,
+                                "unit": "ON-IN",
+                                "lastReportedValue": 36,
+                                "startTime": "",
+                                "endTime": "",
+                                "lastReportedDate": "2022-06-24 21:03:43.887766+00:00"
+                            },
+                            {
+                                "profileType": "AIRCRAFT",
+                                "serial": "680A-0258TEST",
+                                "position": 0,
+                                "unit": "OUT-OFF",
+                                "lastReportedValue": 50,
+                                "startTime": "",
+                                "endTime": "",
+                                "lastReportedDate": "2022-06-24 21:03:43.887781+00:00"
+                            },
+                            {
+                                "profileType": "PROPELLER",
+                                "serial": "1234-TEST",
+                                "position": 0,
+                                "unit": "HRS",
+                                "lastReportedValue": 240,
+                                "startTime": "",
+                                "endTime": "",
+                                "lastReportedDate": "2022-06-24 21:03:43.887797+00:00"
+                            },
+                            {
+                                "profileType": "APU",
+                                "serial": "P-975TEST",
+                                "position": 0,
+                                "unit": "APUS",
+                                "lastReportedValue": 122,
+                                "startTime": "",
+                                "endTime": "",
+                                "lastReportedDate": "2022-06-24 21:03:43.887812+00:00"
+                            },
+                            {
+                                "profileType": "APU",
+                                "serial": "P-975TEST",
+                                "position": 0,
+                                "unit": "HRS",
+                                "lastReportedValue": 1930,
+                                "startTime": "",
+                                "endTime": "",
+                                "lastReportedDate": "2022-06-24 21:03:43.887827+00:00"
+                            },
+                            {
+                                "profileType": "AIRCRAFT",
+                                "serial": "680A-0258TEST",
+                                "position": 0,
+                                "unit": "AFL",
+                                "lastReportedValue": 2474,
+                                "startTime": "",
+                                "endTime": "",
+                                "lastReportedDate": "2022-06-24 21:03:43.887841+00:00"
+                            },
+                            {
+                                "profileType": "AIRCRAFT",
+                                "serial": "680A-0258TEST",
+                                "position": 0,
+                                "unit": "HRS",
+                                "lastReportedValue": 84486,
+                                "startTime": "",
+                                "endTime": "",
+                                "lastReportedDate": "2022-06-24 21:03:43.887855+00:00"
                             }
                         ]
                     }
-                }
-            },
-            "resource": "/{proxy+}",
-            "requestContext": {
-                "resourceId": "123456",
-                "apiId": "1234567890",
-                "resourcePath": "/{proxy+}",
-                "httpMethod": "POST",
-                "requestId": "c6af9ac6-7b61-11e6-9a41-93e8deadbeef",
-                "accountId": "123456789012",
-                "identity": {
-                    "apiKey": "",
-                    "userArn": "",
-                    "cognitoAuthenticationType": "",
-                    "caller": "",
-                    "userAgent": "Custom User Agent String",
-                    "user": "",
-                    "cognitoIdentityPoolId": "",
-                    "cognitoIdentityId": "",
-                    "cognitoAuthenticationProvider": "",
-                    "sourceIp": "127.0.0.1",
-                    "accountId": "",
-                },
-                "stage": "prod",
-            },
-            "queryStringParameters": {"foo": "bar"},
-            "headers": {
-                "Via": "1.1 08f323deadbeefa7af34d5feb414ce27.cloudfront.net (CloudFront)",
-                "Accept-Language": "en-US,en;q=0.8",
-                "CloudFront-Is-Desktop-Viewer": "true",
-                "CloudFront-Is-SmartTV-Viewer": "false",
-                "CloudFront-Is-Mobile-Viewer": "false",
-                "X-Forwarded-For": "127.0.0.1, 127.0.0.2",
-                "CloudFront-Viewer-Country": "US",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-                "Upgrade-Insecure-Requests": "1",
-                "X-Forwarded-Port": "443",
-                "Host": "1234567890.execute-api.us-east-1.amazonaws.com",
-                "X-Forwarded-Proto": "https",
-                "X-Amz-Cf-Id": "aaaaaaaaaae3VYQb9jd-nvCd-de396Uhbp027Y2JvkCPNLmGJHqlaA==",
-                "CloudFront-Is-Tablet-Viewer": "false",
-                "Cache-Control": "max-age=0",
-                "User-Agent": "Custom User Agent String",
-                "CloudFront-Forwarded-Proto": "https",
-                "Accept-Encoding": "gzip, deflate, sdch",
-            },
-            "pathParameters": {"proxy": "/examplepath"},
-            "httpMethod": "POST",
-            "stageVariables": {"baz": "qux"},
-            "path": "/examplepath",
+                ]
+            }
         }
+
+    def test_debug(self):
+        payload = {"context": {
+            "securityToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJmaXJzdE5hbWUiOiJEZW1pZXRyaXVzIiwibGFzdE5hbWUiOiJIdWZmIiwibG9nb25UeXBlIjoiQ0EiLCJzdXBwbGllcklkIjoxMDAwLCJidXNpbmVzc0lkIjowLCJ1c2VySWQiOjI2MjIyNjg1LCJpc3MiOiJDaGFydGVyIGFuZCBHbyBhdXRoZW50aWNhdGlvbiIsImV4cCI6MTY2Njg0MjcwM30.ZSkb7k6qDWpzKOe83cm4qboYbIBumKgV4l-IU0Mrnw5NPuuSSfMkpcemuGR7auWTcQwMPhTo9rcwLj0323hJyhZl3hx7z90hAGBA8TTngHvWU9nwMIpSpAlckYOQ9ep443B_Y2jZNqNBrPppHME6h3H21p3cBXdnAu1J8EKN2vmwUgPRqUMoNxBK2y1Ml3zQZmcKaEThDgWOxKJHLOcgzd_wgIVCJlxe57E3bWjBho-tiPZ2ZmqYLpCyl-vGmGI-KTdwm1NVQ7jgEQsleS0CHqNSfN91TNm8D-ijz4ct0xSNMbbtXoHD2iHRevc2oF5_6AMk0tFTE2Ofy82V97WtuObhLIRtRvLpwnpO3zOBzGCtmdS-FUDuMy5HPtDxPQVmdGe6_4qENOTdJakKzJAIe_lBYrx4tdklmE53QEU7z4ZTlYB88L3SLV1i-dYu2Lk0bsOG2bPfjGMwtY4NjeD2qqfeSBuI3dN_j7y3Vxte1r6_S1c2nm4iO1lkni8Utch1",
+                      "domainName": "Maintenance", "language": "EN", "client": "CAG POS",
+            "transactionId": "753b4026-227b-4a65-acb5-ddc8bffcf6b6"},
+                   "commonParms": {"action": "GetValidAircraft", "view": "CAMP", "version": "1.0.0"},
+                   "request": {"supplierId": 7000, "maintenanceProvider": "CAMP", "userName": "CGFLFEED0006",
+                               "account": "CAMP", "status": "active", "type": "maintenance",
+                               "keyPrefix": "CGFLFEED0006-CAMP", "secretName": "7000-1-Profiles",
+                               "lastUpdated": "2022-01-06 21:26:15.939561"}}
+        response = app.lambda_handler(payload, " ")
 
     def test_lambda_handler1(self):
         print("insdie event")
-        payload = {"context":{"domainName":"Maintenance","securityToken":"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJmaXJzdE5hbWUiOiJQZXRlciIsImxhc3ROYW1lIjoiR29zc2VsbCIsImxvZ29uVHlwZSI6IkNBIiwic3VwcGxpZXJJZCI6MTAwMCwiYnVzaW5lc3NJZCI6MCwidXNlcklkIjozNzcxMTU4MCwiaXNzIjoiQ2hhcnRlciBhbmQgR28gYXV0aGVudGljYXRpb24iLCJleHAiOjE2NDE0MzkwOTR9.Bfb61sWJKsQro6WydhC3dB8ZIOW75xZmcK3c4lrFZHYozxoq_qAImG_TqnO-li02orfymaor4PzCWNXgc-NhR4CZbyRUqjMml0binRIkXsNcgX7snxCxMnCrZe7cmlu_x063ayruuCnYu-dBHI4sZyM_WURXWsdM-jQIv_YIHhuH9ESugUfJe525EJRp_-0SdI7lHyjBFtl4suF7BX9JjisZWy9U455A8TGWmQT45KItFMy3NE_lIAGfjHwMRRVTlehFH-1J2jpZrlmvgVwkL6C89Js5bwxzKDreCRLzZx0JqQA-UYGBsOV1Ly9RlCWtp3LbTYoj0qcesyKulG-PIp82AX6RUlhuuCptUdR92oafvbMbhi40Cupo3b4NttPxQiugZhhVBBqldNAq8SyIYTnK6rcEmSxslX8Noa4mk1V0iW4Bln0d8OxlHrZhRTTNI-p-np-BH6d8sUGdeKOC0R5QxXlmWJeG13nd8NbbCTtFyt-NQvQuQKiirrsbfQZS","language":"EN"},"commonParms":{"action":"GetValidAircraft","view":"CAMP","version":"1.0.0","transactionId":"PETERG ACCOUNTS"},"request":{"supplierId":7000,"maintenanceProvider":"CAMP","userName":"CGFLFEED0006c","account":"CAMP","status":"active","type":"maintenance","keyPrefix":"CGFLFEED0006c-CAMP","secretName":"7000-1-Profiles","lastUpdated":"2021-11-05 21:21:56.312993"}}
+        payload = {'context': {
+            'securityToken': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJmaXJzdE5hbWUiOiJzdXBwbGllciIsImxhc3ROYW1lIjoiYWRtaW4iLCJsb2dvblR5cGUiOiJDQSIsInN1cHBsaWVySWQiOjEwMDAsImJ1c2luZXNzSWQiOjAsInVzZXJJZCI6NDQ5NjcxOTEsImlzcyI6IkNoYXJ0ZXIgYW5kIEdvIGF1dGhlbnRpY2F0aW9uIiwiZXhwIjoxNjU3NTgxNjA4fQ.fzQc3q0hbFW-lJeFB0yR22E68hzOYVal5cwE87bbzdLH-1iSBhmFQUG47LBG9OYEIBrdncdSAJpbyoUt6DOhrFAxZs6pOXf1lfozSyCybcfPg3PeEl6-SS4WJ_Xp8l5SkeOzF0cdgcjAIcioGeO8dQzeXlwlMmF7WUbvjNz1c04s8ZjhIbVxRJ7gJTfXbs-3e2eKcKZY8VwRhF6yw-Gcwj0lKpJSEPFTbhcjj5Z19d79sWld0GgBp_PmY26akAf7p209wJhdVrOpFS7dLXpIPUY2B-3i1C7PfIJ7BNMfulFQKXUruephWMzWanOO9_VEtQxCfKWg9W2zwAxe0Jy-ODLF5JA5rDD-4n86LnAzxVdgs2lGZxb5yrUyvo2mFYZtxcCDx769ueIrhAKgecgyeY9yk3lIzdnO7s4mq9wCuq8Alehc38-mX2QXeSxerUvDKFkzRD6JzaVbprvUhStM4lGUu7NBxrHKVUCn51P3pne6yPZbQ9p_B14uqlzaIH5v',
+            'domainName': 'Maintenance', 'language': 'EN', 'client': 'CAG POS',
+            'transactionId': '99007ac4-f464-4ab1-b083-b540a926cb36'},
+                   'commonParms': {'action': 'GetMaintenance', 'view': 'DEFAULT', 'version': '1.0.0'},
+                   'request': {'supplierId': 7000,
+                               'aircraftDetails': {'maintenanceProvider': '', 'modelName': 'G200', 'regNo': 'N-TXT8',
+                                                   'serial': '680A-0258TEST', 'dateRange': 120}}}
+
         response = app.lambda_handler(payload, " ")
         pass
-
-    def test_lambda_handler(apigw_event, mocker):
-        ret = app.lambda_handler(apigw_event, "")
-        data = json.loads(ret["body"])
-
-        assert ret["statusCode"] == 200
-        assert "message" in ret["body"]
-        assert data["message"] == "hello world"
-        # assert "location" in data.dict_keys()
 
     def test_create_secret(self):
         session = boto3.session.Session()
@@ -226,3 +295,30 @@ class Test(TestCase):
             pass
         except Exception as details:
             return 1, "FATAL", "Exception, retrieving supplier profiles"
+
+    def test_getValidAircraft(self):
+        payload = {
+            "context": {
+                "domainName": "Maintenance",
+                "securityToken": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJmaXJzdE5hbWUiOiJQZXRlciIsImxhc3ROYW1lIjoiR29zc2VsbCIsImxvZ29uVHlwZSI6IkNBIiwic3VwcGxpZXJJZCI6MTAwMCwiYnVzaW5lc3NJZCI6MCwidXNlcklkIjozNzcxMTU4MCwiaXNzIjoiQ2hhcnRlciBhbmQgR28gYXV0aGVudGljYXRpb24iLCJleHAiOjE2NDYzNTIyMDN9.I2IaZ2MWWf8dftIjrhQjrNmegMHyRwmZPQXplIs8XX0fTyKvx7ETEf7WCjjMMec9CsiUe6PPpzTAqa4B6DhTmaD6r0dfCgvfWbK0WaljyGoDfHlG8W9nW4AwC94Myu9NQdYEvzb3bt7JfktYu80WNn6sysEDzuWwJ3iUftI46aWazUYPCONRClVajllKQ3TEEA3ZrwVoH0qJ4VnnbD0Xi_mIP8AHFEzTp1aHFZLg7m9geryHSKquASDcEHf9TiHNMROWtW2HtE4pLg9NfTFMymcD1XRUU9vLOK_HDlmgy_RVTcyL4gbHiW3KDfn-UuWLYghAtnQgqLtNz8i3chGpE6dAAu3jGOKhKXJkko0RIMLl7H-pK3vTJ3mvE-2wceMaHyvnR-jzSYaJhHmflHm790YcEiMbCK5G2Bg-s8FV92dIW-xTsCcvJLCljnvcjRdJajW1tu3cecQ8flq0DyeXEgifS-SowTxLqcA-wYjInozKs-4JDhh2r0nf8tKL1MbG",
+                "language": "EN"
+            },
+            "commonParms": {
+                "action": "GetValidAircraft",
+                "view": "CAMP",
+                "version": "1.0.0",
+                "transactionId": "PETERG ACCOUNTS"
+            },
+            "request": {
+                "supplierId": 7000,
+                "maintenanceProvider": "CAMP",
+                "userName": "CGFLFEED0006",
+                "account": "CAMP",
+                "status": "active",
+                "type": "maintenance",
+                "keyPrefix": "CGFLFEED0006-CAMP",
+                "secretName": "7000-1-Profiles",
+                "lastUpdated": "2022-01-06 21:26:15.939561"
+            }
+        }
+        ret = app.lambda_handler(payload, " ")

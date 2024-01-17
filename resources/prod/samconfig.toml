@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "MaintenanceBroker-Prod"
+s3_bucket = "charterandgo-deploy-prod"
+s3_prefix = "MaintenanceBroker"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"

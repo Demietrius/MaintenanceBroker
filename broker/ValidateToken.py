@@ -15,6 +15,8 @@ class ValidateToken:
     authSupplierId = 0
     authBusinessId = 0
     authUserId = 0
+    authBranchAccess = []
+    swapSupplierId = 0
     public_key = os.environ.get('CAG_public_key')
     private_key = os.environ.get('CAG_private_key')
     region = os.environ.get('CAG_REGION')
@@ -31,19 +33,23 @@ class ValidateToken:
             if 'exp' not in decoded or 'logonType' not in decoded or \
                     'supplierId' not in decoded or 'userId' not in decoded or \
                     'businessId' not in decoded:
-                return 33004, 'FATAL', 'Exception, validate token structure'
+                return 48003, 'FATAL', 'Exception, validate token structure'
 
             else:
                 cls.authLogonType = decoded['logonType']
                 cls.authSupplierId = decoded['supplierId']
                 cls.authBusinessId = decoded['businessId']
                 cls.authUserId = decoded['userId']
+                if 'branchAccess' in decoded:
+                    cls.authBranchAccess = decoded['branchAccess']
+                if 'swapSupplierId' in decoded:
+                    cls.swapSupplierId = decoded['swapSupplierId']
 
                 return 0, 'GOOD', errMsg
 
         except Exception as details:
             logger.error('Unexpected error: {0}'.format(details))
-            return 33003, 'FATAL', 'Exception, invalid token'
+            return 48003, 'FATAL', 'Exception, invalid token'
 
     @classmethod
     def get_public_key(cls, publicSecretName, regionName):
@@ -68,15 +74,15 @@ class ValidateToken:
             except ClientError as e:
                 logger.debug('Unexpected error: {0}'.format(e))
                 if e.response['Error']['Code'] == 'DecryptionFailureException':
-                    return 33002, 'FATAL', 'DecryptionFailureException', secret
+                    return 49031, 'FATAL', 'DecryptionFailureException', secret
                 elif e.response['Error']['Code'] == 'InternalServiceErrorException':
-                    return 33002, 'FATAL', 'InternalServiceErrorException', secret
+                    return 49032, 'FATAL', 'InternalServiceErrorException', secret
                 elif e.response['Error']['Code'] == 'InvalidParameterException':
-                    return 33002, 'FATAL', 'InvalidParameterException', secret
+                    return 49033, 'FATAL', 'InvalidParameterException', secret
                 elif e.response['Error']['Code'] == 'InvalidRequestException':
-                    return 33002, 'FATAL', 'InvalidRequestException', secret
+                    return 49034, 'FATAL', 'InvalidRequestException', secret
                 elif e.response['Error']['Code'] == 'ResourceNotFoundException':
-                    return 33002, 'FATAL', 'ResourceNotFoundException', secret
+                    return 49035, 'FATAL', 'ResourceNotFoundException', secret
             else:
                 # Decrypts secret using the associated KMS CMK.
                 # Depending on whether the secret is a string or binary, one of these fields will be populated.
@@ -87,7 +93,7 @@ class ValidateToken:
             return errNum, 'GOOD', errMsg, secret
         except Exception as details:
             logger.error('Unexpected error: {0}'.format(details))
-        return 33003, 'FATAL', 'Exception, get public key', secret
+        return 49036, 'FATAL', 'Exception, get public key', secret
 
     @classmethod
     def get_authLogonType(cls):
@@ -104,3 +110,10 @@ class ValidateToken:
     @classmethod
     def get_authUserId(cls):
         return cls.authUserId
+    @classmethod
+    def get_authBranchAccess(cls):
+        return cls.authBranchAccess
+
+    @classmethod
+    def get_swapSupplierId(cls):
+        return cls.swapSupplierId

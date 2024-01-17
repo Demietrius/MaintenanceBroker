@@ -3,7 +3,7 @@ swagger: "2.0"
 info:
   description: "CharterandGo MaintenanceBroker"
   version: "1.0.0"
-  title: "Swagger MaintenanceBroker"
+  title: "MaintenanceBroker"
 host: "lj8nu5djw5.execute-api.us-east-1.amazonaws.com"
 basePath: "/dev-V1"
 schemes:
